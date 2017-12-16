@@ -1,0 +1,4 @@
+pychromecast
+netifaces
+PyQt5
+protobuf==3.5.0.post1
