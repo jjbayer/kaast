@@ -7,36 +7,37 @@ from tempfile import TemporaryDirectory
 import os
 import threading
 import random
+import mimetypes
 
 from pychromecast import get_chromecasts
 import netifaces
 
 
-IP = "192.168.0.179"
 PORT = random.randint(8700, 8800)
 
+
+class UnsupportedMimeType(RuntimeError):
+
+    pass
 
 
 def get_own_ip():
 
-    default_gateways = netifaces.gateways()['default']
-    gateway, _ = default_gateways[netifaces.AF_INET]
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect((gateway, 80))
-    ip_address = s.getsockname()[0]
-    s.close()
-
-    return ip_address
+    _, interface = netifaces.gateways()['default'][netifaces.AF_INET]
+    
+    return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
+    
 
 class SingleFileWebServer:
 
     def  __init__(self, filename):
 
         self._filename = filename
-        _, self._extension = os.path.splitext(filename)
-        self.content_type = "video/%s" % self._extension[1:]
-        self._pseudoname =  "video" + self._extension
+        self.content_type = mimetypes.guess_type(filename)[0]
+
+        self._pseudoname = (
+            "video%s" % mimetypes.guess_extension(self.content_type)
+        )
 
     def __enter__(self):
 
@@ -53,11 +54,10 @@ class SingleFileWebServer:
             ("", PORT), Handler)
 
         print("serving at port", PORT)
-        # import ipdb; ipdb.set_trace()
         threading._start_new_thread(
             self._httpd.serve_forever, ())
         
-        self.url = "http://%s:%s/%s" %(IP, PORT, self._pseudoname)
+        self.url = "http://%s:%s/%s" %(get_own_ip(), PORT, self._pseudoname)
         print(self.url)
 
         return self
@@ -66,7 +66,6 @@ class SingleFileWebServer:
 
         self._httpd.shutdown()
         self._tempdir.__exit__(*args, **kwargs)
-
 
 
 
@@ -98,14 +97,13 @@ def play_media(chromecast, filename):
 
         print("File should be available at %s" % server.url)
 
+        # mc.play_media(
+        #     server.url,
+        #     content_type=server.content_type)
+        # mc.block_until_active()
+        # print(mc.status)
 
-        mc.play_media(
-            server.url,
-            content_type=server.content_type)
-        mc.block_until_active()
-        print(mc.status)
-
-        sleep(10)
+        # sleep(10)
 
 if __name__ == '__main__':
     main()
