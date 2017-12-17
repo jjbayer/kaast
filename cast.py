@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import sys
+from time import sleep
 
 from pychromecast import get_chromecasts
 
@@ -27,7 +28,9 @@ def main():
 
         caster.play_media(args.filename)
 
-        # sleep(10)
+        for i in range(100):
+            print("Sleep %s" % i)
+            sleep(1)
 
 
 if __name__ == '__main__':

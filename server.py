@@ -48,5 +48,8 @@ class SingleFileWebServer:
 
     def __exit__(self, *args, **kwargs):
 
+        print("Stopping web server...")
         self._httpd.shutdown()
+        print("Removing tempdir...")
         self._tempdir.__exit__(*args, **kwargs)
+        print("Done.")
