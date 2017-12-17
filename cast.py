@@ -28,10 +28,7 @@ def main():
 
         caster.play_media(args.filename)
 
-        for i in range(100):
-            print("Sleep %s" % i)
-            sleep(1)
-
+        sleep(60*60*24)
 
 if __name__ == '__main__':
     main()

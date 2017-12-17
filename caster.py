@@ -7,7 +7,6 @@ class Caster:
 
     def __init__(self, chromecast: pychromecast.Chromecast):
         self._chromecast = chromecast
-        self._chromecast.socket_client.start()
         self._media_controller = chromecast.media_controller
         self._server = None
 

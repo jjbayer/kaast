@@ -35,6 +35,7 @@ class ControlWindow(QMainWindow):
 
     def _handle_chromecast(self, chromecast):
         self._stop_discovery()
+        chromecast.socket_client.start()
         self._caster = Caster(chromecast)
         self._set_status("Found %s at %s" % (
             chromecast.name, chromecast.host))
@@ -86,8 +87,6 @@ class ControlWindow(QMainWindow):
         self.setGeometry(300, 300, 300, 50)
         self.setWindowTitle('Chromecast')
         self.show()
-
-        # self._caster = Caster.first_available()
 
     def _set_status(self, message):
         self.statusBar().showMessage(message)
