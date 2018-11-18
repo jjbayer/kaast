@@ -20,7 +20,7 @@ import app.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('directory/<path:path>', app.views.index, name='index'),
+    path('directory/<path:path>', app.views.index, name='directory'),
     path('', app.views.index, name='index'),
     path('file/<path:path>', app.views.file, name='file'),
 ]

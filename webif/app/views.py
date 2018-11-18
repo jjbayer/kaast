@@ -1,10 +1,17 @@
 from pathlib import Path
-import os
 from urllib.parse import urlencode
+import logging
+import os
 
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse
+
+from pychromecast import get_chromecasts
+from caster import Caster
+
+
+LOG = logging.getLogger(__name__)
 
 
 def index(request, path=None):
@@ -31,8 +38,34 @@ def file(request, path):
     abs_path, _ = get_path(path)
     assert abs_path.is_file()
 
+    parent = abs_path.parent
+    rel_path_parent = parent.relative_to(settings.MEDIA_DIRECTORY)
+
+    state = None
+    action = request.GET.get('action')
+    if action == "start":
+        LOG.info("Try playing %s", abs_path)
+        get_caster().play_media(str(abs_path))
+        state = "playing"
+    elif action == "pause":
+        LOG.info("Try pausing %s", abs_path)
+        get_caster().pause()
+        state = "paused"
+    elif action == "resume":
+        LOG.info("Try resuming %s", abs_path)
+        get_caster().play()
+        state = "playing"
+    elif action == "stop":
+        LOG.info("Try to stop %s", abs_path)
+        get_caster().stop()
+        state = "stopped"
+
     return render(request, 'file.pug', {
-        'name': abs_path.name
+        'parent': abs_path.parent.name,
+        'parent_path': rel_path_parent,
+        'name': abs_path.name,
+        'state': state,
+        'chromecast_name': get_caster().name,
     })
 
     
@@ -68,3 +101,11 @@ def get_path(rel_path):
 # def url_with_params(view_name, params):
 
 #     return reverse(view_name) + "?" + urlencode(params)
+
+
+def get_caster():
+
+    if not hasattr(get_caster, '_caster'):
+        get_caster._caster = Caster(get_chromecasts()[0])
+
+    return get_caster._caster

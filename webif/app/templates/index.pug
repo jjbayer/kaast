@@ -1,10 +1,7 @@
 ul
-    //- if not is_root
-    //-     li
-    //-         a(href="{% url 'index' path %}) ..
     for file in directory
         li
             if file.is_dir
-                a(href="{% url 'index' file.rel_path %}") {{ file.name }}
+                a(href="{% url 'directory' file.rel_path %}") {{ file.name }}
             else
                 a(href="{% url 'file' file.rel_path %}") {{ file.name }}

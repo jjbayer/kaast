@@ -30,3 +30,7 @@ class Caster:
         self._media_controller.stop()
         self._server.__exit__(None, None, None)
         self._server = None
+
+    @property
+    def name(self):
+        return self._chromecast.name

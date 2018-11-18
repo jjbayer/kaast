@@ -1,1 +1,21 @@
-{{ name }}
+p
+    if parent_path
+        a(href="{% url 'directory' parent_path %}") Back to {{ parent }}
+    else
+        a(href="{% url 'index' %}") Back to {{ parent }}
+
+p Connected to {{ chromecast_name }}
+
+p {{ name }}
+
+ul
+    li
+        if state == "playing"
+            a(href="?action=pause") Pause
+        elif state == "paused" 
+            a(href="?action=resume") Play
+        else
+            a(href="?action=start") Play 
+    li
+        if state != "stopped"
+            a(href="?action=stop") Stop
