@@ -1,1 +1,5 @@
 __pycache__
+*sublime-project
+*sublime-workspace
+/webif/local_settings.py
+/webif/*sqlite3
